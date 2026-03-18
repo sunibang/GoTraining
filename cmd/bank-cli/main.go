@@ -2,7 +2,12 @@
 // See internal/bank/ for domain models and service layer.
 package main
 
-import "fmt"
+import (
+	"fmt"
+
+	_ "github.com/spf13/cobra"
+	_ "golang.org/x/sync/errgroup"
+)
 
 func main() {
 	// TODO: wire up Cobra root command

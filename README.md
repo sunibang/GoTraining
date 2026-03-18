@@ -95,14 +95,10 @@ Navigate to the respective [directories](internal/basics) to find code examples 
 
 ## Module 3: Building the Data & API Service
 
-Implement a persistent storage layer and HTTP service for the "Go Bank" domain:
+Build a persistent storage layer and HTTP service for the "Go Bank" domain. This module demonstrates a clean, layered architecture separating domain logic from transport and storage.
 
-- [Domain Models](internal/bank/domain/README.md) — Account and Transaction entities.
-- [Store Layer](internal/bank/store/README.md) — Postgres repository using `go-jet`.
-- [Service Layer](internal/bank/service/README.md) — Business logic isolation.
-- [API Layer](internal/bank/api/README.md) — HTTP handlers and Gin middleware.
-
-Detailed quest descriptions are available in the [Go Bank Challenge](internal/challenges/bank/README.md).
+- Dive into the [Go Bank Architecture](internal/bank/README.md) to understand how the layers fit together.
+- Ready to code? Jump straight into the [Go Bank Transfer Quest](internal/challenges/bank/README.md).
 
 ## Module 4: Temporal Orchestration
 
@@ -119,6 +115,6 @@ Take on various exercises to test your understanding of Go:
 - [Challenges Overview](internal/challenges/README.md)
 - [Fix Me](internal/challenges/basics/fixme/README.md) — Diagnose and fix buggy code.
 - [Implement Me](internal/challenges/basics/implme/README.md) — Complete the implementation to pass tests.
-- [Go Bank Quests](internal/challenges/bank/README.md) — Build the end-to-end service.
+- [Go Bank Transfer Quest](internal/challenges/bank/README.md) — Build the `POST /v1/transfers` API endpoint.
 
 Navigate to the respective [directories](internal/challenges) to start the exercises.

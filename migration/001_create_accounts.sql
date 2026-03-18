@@ -1,7 +1,11 @@
 -- 001_create_accounts.sql
--- TODO: Define the accounts table for Go Bank
--- Suggested columns: id, first_name, last_name, email, balance, status, created_at, updated_at
+-- Bank accounts table for Go Bank training exercise
 
 CREATE TABLE IF NOT EXISTS accounts (
-    -- TODO: implement
+    id          VARCHAR(64)   NOT NULL PRIMARY KEY,
+    owner       VARCHAR(255)  NOT NULL,
+    balance     BIGINT NOT NULL DEFAULT 0,
+    status      VARCHAR(16)   NOT NULL DEFAULT 'OPEN',
+    created_at  TIMESTAMPTZ   NOT NULL DEFAULT NOW(),
+    updated_at  TIMESTAMPTZ   NOT NULL DEFAULT NOW()
 );

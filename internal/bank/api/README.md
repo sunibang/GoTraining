@@ -1,16 +1,23 @@
-# API
+# API Layer
 
-The api package implements the Go Bank REST API using [Gin](https://github.com/gin-gonic/gin).
+Welcome to the **API Layer**—the front door of Go Bank! This package handles all incoming HTTP requests using the [Gin](https://github.com/gin-gonic/gin) web framework. 
 
-## Responsibilities
+## What happens at the front door?
 
-- Route registration and HTTP method mapping
-- Request parsing and validation
-- Response serialisation (JSON)
-- Middleware (logging, error handling, auth)
+- **Routing:** Mapping URLs like `/v1/transfers` to the right Go functions.
+- **Parsing & Validation:** Extracting JSON payloads and ensuring the data is correct before our service layer ever sees it.
+- **Middleware Magic:** Orchestrating cross-cutting concerns like JWT authorization, OpenTelemetry tracing, and structured logging (`slog`).
+- **Response Formatting:** Returning clean JSON successes or translating domain errors into the right HTTP status codes.
 
-## Challenge
+## How to navigate
 
-Implement the HTTP handlers after completing the `domain/` and `service/` packages.
+- **`account/`**: Your golden reference! This is a fully built, working implementation of GET/POST handlers, complete with tests. Read this first.
+- **`transfer/`**: Your blank canvas. This is where you'll build the transfer endpoint.
+- **`middleware/`**: Shared tools that wrap our handlers (auth, logging, tracing).
+- **[server.go](server.go)**: The central hub that wires the router, middleware, and routes together.
 
-See `internal/challenges/bank/README.md` for quest details.
+## Ready to Code?
+
+You've explored the engine room, from the inner domain to the outer API. This is where the magic happens. Your mission is to wire up the transfer routes, build the handler, and write the tests. 
+
+Jump into the **[Go Bank Transfer Quest](../../challenges/bank/README.md)** to get started!

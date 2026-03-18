@@ -1,0 +1,21 @@
+all: false
+dir: '{{.InterfaceDir}}/mocks'
+filename: '{{.InterfaceName | snakecase}}.go'
+force-file-write: true
+formatter: goimports
+include-auto-generated: true
+log-level: info
+structname: '{{.InterfaceName}}'
+pkgname: 'mocks'
+recursive: false
+require-template-schema-exists: true
+template: testify
+template-schema: '{{.Template}}.schema.json'
+
+packages:
+  github.com/romangurevitch/go-training/internal/bank/service:
+    interfaces:
+      Service: {}
+  github.com/romangurevitch/go-training/internal/bank/repository:
+    interfaces:
+      Repository: {}

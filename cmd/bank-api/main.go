@@ -1,18 +1,20 @@
-// Package main is the entry point for the Go Bank REST API server.
-// See internal/bank/api/ for the HTTP layer implementation.
 package main
 
 import (
-	"fmt"
+	"log/slog"
+	"os"
 
-	_ "github.com/gin-gonic/gin"
-	_ "github.com/go-jet/jet/v2/postgres"
-	_ "github.com/lib/pq"
-	_ "github.com/spf13/viper"
+	"github.com/romangurevitch/go-training/internal/bank/app"
+	"github.com/romangurevitch/go-training/internal/bank/config"
 )
 
+func init() {
+	config.Init()
+}
+
 func main() {
-	// TODO: initialise config, logger, database store, and start Gin server
-	// See internal/bank/api/README.md for implementation guide
-	fmt.Println("Go Bank API — not yet implemented")
+	if err := app.Run(); err != nil {
+		slog.Error("application failed", slog.Any("error", err))
+		os.Exit(1)
+	}
 }

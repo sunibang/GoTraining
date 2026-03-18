@@ -1,7 +1,10 @@
 -- 002_create_transactions.sql
--- TODO: Define the transactions table for Go Bank
--- Suggested columns: id, account_id, type, amount, created_at
+-- Bank transactions table for Go Bank training exercise
 
 CREATE TABLE IF NOT EXISTS transactions (
-    -- TODO: implement
+    id          VARCHAR(64)   NOT NULL PRIMARY KEY,
+    account_id  VARCHAR(64)   NOT NULL REFERENCES accounts(id),
+    amount      BIGINT NOT NULL,
+    type        VARCHAR(16)   NOT NULL,
+    created_at  TIMESTAMPTZ   NOT NULL DEFAULT NOW()
 );

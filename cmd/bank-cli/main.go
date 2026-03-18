@@ -1,16 +1,29 @@
-// Package main is the entry point for the Go Bank CLI tool.
-// See internal/bank/ for domain models and service layer.
 package main
 
 import (
-	"fmt"
+	"net/http"
+	"os"
 
-	_ "github.com/spf13/cobra"
-	_ "golang.org/x/sync/errgroup"
+	"github.com/romangurevitch/go-training/internal/bank/cli"
+	"github.com/romangurevitch/go-training/pkg/client/bank"
+	"github.com/spf13/cobra"
 )
 
 func main() {
-	// TODO: wire up Cobra root command
-	// See internal/bank/README.md for implementation guide
-	fmt.Println("Go Bank CLI — not yet implemented")
+	// API base URL can be configured via environment variable for flexibility.
+	apiURL := os.Getenv("BANK_API_URL")
+	if apiURL == "" {
+		apiURL = "http://localhost:8080" // Root URL, client handles /v1/
+	}
+
+	// Initialize the Bank REST client.
+	bankClient := bank.New(apiURL, &http.Client{})
+
+	// Load token from environment if present.
+	if token := os.Getenv("BANK_TOKEN"); token != "" {
+		bankClient.SetToken(token)
+	}
+
+	// Execute the CLI.
+	cobra.CheckErr(cli.New(bankClient).Execute())
 }

@@ -4,7 +4,8 @@
 
 Interfaces in Go is used widely to loose coupling between packages. When we run unit test packages with interfaces, mocking
 can be very useful to simplify the test code and focus on testing the logic within the package only.  
-There are many open source mocking libraries that generates mocking code structure automatically. In this demo, we 
+There are many popular mocking libraries that generates mocking code structure automatically. In this demo, we
+ 
 picked the two most popular mocking libraries in the market. 
 
 ## Mockery

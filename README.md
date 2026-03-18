@@ -1,46 +1,124 @@
-# Go Training
+# Go Training Workshop
 
-A practical Go training workshop for engineers transitioning from Python and Bash to Go. Uses a banking domain ("Go Bank") to teach production-ready API and CLI patterns.
+Welcome to the immersive Go Training Workshop! This program is designed to deliver a profound understanding of Go programming, transitioning from interpreted or higher-level languages to building production-grade services and command-line tools.
 
-## Structure
+Throughout this hands-on workshop, delve into the nuances of building robust applications employing idiomatic design patterns, the standard library, and modern frameworks. Under expert guidance, unravel the design philosophies and engineering decisions that underpin effective Go development.
 
-| Module | Location | Topic |
-|---|---|---|
-| 1 | `internal/fundamentals/` | API design, security, observability |
-| 2 | `internal/basics/` | Go language building blocks |
-| 3 | `internal/bank/` | Go Bank service (the challenge) |
-| 4 | `internal/temporal/` | Temporal orchestration (demo) |
+## Table of Contents
 
-Challenges live in `internal/challenges/`.
+1. [Prerequisites](#prerequisites)
+2. [Getting Started](#getting-started)
+3. [Module 1: Modern API Engineering Principles](#module-1-modern-api-engineering-principles)
+4. [Module 2: Go Language Fundamentals](#module-2-go-language-fundamentals)
+5. [Module 3: Building the Data & API Service](#module-3-building-the-data--api-service)
+6. [Module 4: Temporal Orchestration](#module-4-temporal-orchestration)
+7. [Challenges](#challenges)
 
-## Quick Start
+## Prerequisites
 
-```bash
-# 1. Setup
-go mod tidy
-make build
-make test
+- [Go 1.26.1+](https://go.dev/dl/) installed.
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed (for database infrastructure).
+- Basic experience with command-line tools is required.
+- Familiarity with at least one other programming language (e.g., Python, Bash, or Java).
 
-# 2. Start the database
-make db-up
+## Getting Started
 
-# 3. Explore a topic
-go test -v ./internal/basics/pointers/...
-```
+1. **Clone the Repository**:
+    ```bash
+    git clone https://github.com/romangurevitch/GoTraining.git
+    cd GoTraining
+    ```
 
-See [docs/setup.md](docs/setup.md) for full setup instructions.
+2. **Makefile Help**:
+    View the available make targets and their descriptions:
+    ```bash
+    make help
+    ```
 
-## Workshop Timeline
+3. **Verify Installation**:
+    Initialize dependencies and run the build/test suite:
+    ```bash
+    go mod tidy
+    make build
+    make test
+    ```
 
-- **Day 1:** Module 1 (API fundamentals) + Module 2 (Go basics)
-- **Day 2:** Module 3 (Go Bank challenge) + Module 4 (Temporal demo)
+4. **Start Infrastructure**:
+    Launch the required database services:
+    ```bash
+    make db-up
+    ```
 
-## Tech Stack
+5. **Open the Project in an IDE**:
+    Two popular choices for Go development are:
+    - [GoLand](https://www.jetbrains.com/go/): A powerful IDE by JetBrains dedicated to Go.
+    - [Visual Studio Code (VSCode)](https://code.visualstudio.com/): Free editor with the [Go extension](https://marketplace.visualstudio.com/items?itemName=golang.Go).
 
-- **Go 1.26.1** — generics, slog, standard library
-- **Gin** — HTTP router
-- **go-jet** — type-safe SQL
-- **Cobra** — CLI framework
-- **Testify** — test assertions
-- **go.uber.org/mock** — interface mocking
-- **PostgreSQL 15** — persistence
+## Module 1: Modern API Engineering Principles
+
+Explore the foundational concepts for building production-ready APIs and platform tools:
+
+- [API Fundamentals](docs/module1-fundamentals.md) — REST vs. RPC, Idempotency, and Contract-First design.
+- [Fundamentals Overview](internal/fundamentals/README.md) — Security, Identity (AuthN/AuthZ), and Structured Logging (`slog`).
+
+## Module 2: Go Language Fundamentals
+
+Dive into the building blocks of Go by exploring the following topics:
+
+- [The Mental Shift](internal/basics)
+    - [Pointers](internal/basics/pointers/README.md)
+    - [Type Assertions](internal/basics/casting/README.md)
+    - [Parameters](internal/basics/parameters/README.md)
+- [Structs & Layout](internal/basics)
+    - [Entities](internal/basics/entity/README.md)
+    - [Package Layout](internal/basics/layout/README.md)
+    - [Embedding](internal/basics/embed/README.md)
+- [Behaviors](internal/basics)
+    - [Receivers](internal/basics/receivers/README.md)
+    - [init()](internal/basics/init/README.md)
+    - [Error Handling](internal/basics/err/README.md)
+    - [Interfaces](internal/basics/interface/README.md)
+- [Concurrency & Context](internal/basics)
+    - [Concurrency](internal/basics/concurrency/README.md)
+    - [Context](internal/basics/context/README.md)
+- [Testing & Benchmarking](internal/basics)
+    - [Testing](internal/basics/testing/README.md)
+    - [Testify](internal/basics/testify/README.md)
+    - [Benchmark](internal/basics/benchmark/README.md)
+    - [HTTP Testing](internal/basics/httptest/README.md)
+- [Advanced Features](internal/basics)
+    - [Generics](internal/basics/generics/README.md)
+    - [Mocking](internal/basics/mocking/README.md)
+    - [Build Tags](internal/basics/buildtags/README.md)
+
+Navigate to the respective [directories](internal/basics) to find code examples and documentation.
+
+## Module 3: Building the Data & API Service
+
+Implement a persistent storage layer and HTTP service for the "Go Bank" domain:
+
+- [Domain Models](internal/bank/domain/README.md) — Account and Transaction entities.
+- [Store Layer](internal/bank/store/README.md) — Postgres repository using `go-jet`.
+- [Service Layer](internal/bank/service/README.md) — Business logic isolation.
+- [API Layer](internal/bank/api/README.md) — HTTP handlers and Gin middleware.
+
+Detailed quest descriptions are available in the [Go Bank Challenge](internal/challenges/bank/README.md).
+
+## Module 4: Temporal Orchestration
+
+Discover reliable, durable execution patterns for long-running workflows:
+
+- [Temporal Overview](internal/temporal/README.md) — Workflow vs. Activity and the Replay model.
+- [Concepts Guide](docs/module4-temporal.md) — Why Temporal beats raw goroutines for distributed systems.
+- [Worker Entrypoint](cmd/worker/main.go) — Temporal worker implementation stub.
+
+## Challenges
+
+Take on various exercises to test your understanding of Go:
+
+- [Challenges Overview](internal/challenges/README.md)
+- [Fix Me](internal/challenges/basics/fixme/README.md) — Diagnose and fix buggy code.
+- [Implement Me](internal/challenges/basics/implme/README.md) — Complete the implementation to pass tests.
+- [Go Bank Quests](internal/challenges/bank/README.md) — Build the end-to-end service.
+
+Navigate to the respective [directories](internal/challenges) to start the exercises.

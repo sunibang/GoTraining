@@ -9,7 +9,7 @@ import (
 	"net/url"
 	"path"
 
-	apierror "github.com/romangurevitch/go-training/pkg/api/error"
+	"github.com/romangurevitch/go-training/pkg/api/apierror"
 )
 
 // DoRequest executes the request with the given context, checks the response status,

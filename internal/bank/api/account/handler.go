@@ -11,7 +11,7 @@ import (
 
 	"github.com/romangurevitch/go-training/internal/bank/domain"
 	"github.com/romangurevitch/go-training/internal/bank/service"
-	apierror "github.com/romangurevitch/go-training/pkg/api/error"
+	"github.com/romangurevitch/go-training/pkg/api/apierror"
 )
 
 // Handler handles account-related HTTP requests.

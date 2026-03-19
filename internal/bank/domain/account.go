@@ -10,6 +10,7 @@ var (
 	ErrAccountNotFound      = errors.New("account not found")
 	ErrInsufficientFunds    = errors.New("insufficient funds")
 	ErrAccountLocked        = errors.New("account is locked")
+	ErrAccountClosed        = errors.New("account is closed")
 	ErrInvalidAmount        = errors.New("invalid amount")
 	ErrAccountAlreadyExists = errors.New("account already exists")
 )
@@ -39,7 +40,7 @@ func (a *Account) CanPerformTransaction() error {
 		return ErrAccountLocked
 	}
 	if a.Status == StatusClosed {
-		return errors.New("account is closed")
+		return ErrAccountClosed
 	}
 	return nil
 }

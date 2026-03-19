@@ -1,40 +1,44 @@
-# Mocking Library
+# Mocking in Go
 
 ## Description
 
-Interfaces in Go is used widely to loose coupling between packages. When we run unit test packages with interfaces, mocking
-can be very useful to simplify the test code and focus on testing the logic within the package only.  
-There are many popular mocking libraries that generates mocking code structure automatically. In this demo, we
- 
-picked the two most popular mocking libraries in the market. 
+Interfaces in Go are used to decouple packages. When unit testing code that depends on interfaces, mocking allows us to isolate the unit under test by providing controlled implementations of those dependencies.
+
+In this project, we use two of the most popular mocking tools in the Go ecosystem.
 
 ## Mockery
 
-https://github.com/vektra/mockery
+[Mockery](https://github.com/vektra/mockery) is a tool that generates mocks for Golang interfaces using the [testify](https://github.com/stretchr/testify) framework.
 
 ### Pros
 
-- It's built on top of a very popular testing library: testify
-- It has a powerful CLI tool, packed with many options.
-- It supports complex mocking logic and has a powerful API.
+- Integrates seamlessly with `testify/mock`, the most popular assertion library in Go.
+- Provides a powerful CLI for bulk mock generation.
+- **Type-Safe Expectations:** Modern Mockery (v2+) supports a type-safe `EXPECT()` API similar to `gomock`, catching signature changes at compile time.
+- Flexible argument matching (e.g., `mock.Anything`, `mock.MatchedBy`).
 
 ### Cons
 
-- ~~When mocking function calls of an interface, we need to use string to match the function name.~~ ->
-  you can now add a flag that will allow the same `EXPECT().` API as gomock
-- The mocking structure is not type-safe.
+- Requires `testify` as a dependency.
 
-## Go Mock
+## Go Mock (uber/mock)
 
-https://github.com/golang/mock
+[GoMock](https://github.com/uber-go/mock) is the official fork of the now-archived `github.com/golang/mock`. It is a reflection-based mocking framework.
 
 ### Pros
 
-- No dependency on any external libraries. It's a native tool.
-- It has a powerful CLI tool, packed with many options.
-- The mock structure created is type-safe.
-- It supports complex mocking logic and has a very powerful API.
+- **Strict Type-Safety:** Mocks are generated as Go code that strictly follows the interface, ensuring compile-time correctness.
+- **Call Ordering:** Excellent support for verifying the exact order of method calls.
+- Part of the `uber-go` suite, known for high-quality engineering standards.
 
 ### Cons
 
-- It doesn't provide the best error messages when error occurs.
+- Slightly more verbose setup compared to Mockery/Testify.
+- Less expressive assertions compared to Testify's `assert` and `require`.
+
+## Which one should I use?
+
+- Use **Mockery** if you are already using `testify` for assertions and want a consistent, expressive mocking experience.
+- Use **GoMock** if you require strict call ordering or prefer the Uber-style engineering patterns.
+
+In this workshop, we primarily use **Mockery** for the Go Bank service to keep our tests concise and readable.

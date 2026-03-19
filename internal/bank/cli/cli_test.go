@@ -33,4 +33,14 @@ func TestNewCLI(t *testing.T) {
 	balanceCmd, _, err := rootCmd.Find([]string{"account", "balance"})
 	assert.NoError(t, err)
 	assert.Equal(t, "balance [account-id]", balanceCmd.Use)
+
+	// Verify 'transfer' command is registered
+	transCmd, _, err := rootCmd.Find([]string{"transfer"})
+	assert.NoError(t, err)
+	assert.Equal(t, "transfer", transCmd.Use)
+
+	// Verify 'transfer create' command is registered
+	transCreateCmd, _, err := rootCmd.Find([]string{"transfer", "create"})
+	assert.NoError(t, err)
+	assert.Equal(t, "create [from-id] [to-id] [amount]", transCreateCmd.Use)
 }

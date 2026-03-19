@@ -1,4 +1,4 @@
-# Module 1: Cloud API Engineering Principles
+# Module 1: Modern API Engineering Principles
 
 This module covers the foundational concepts for building production-ready APIs and platform tools.
 

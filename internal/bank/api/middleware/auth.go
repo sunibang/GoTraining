@@ -7,7 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
-	apierror "github.com/romangurevitch/go-training/pkg/api/error"
+	apierror "github.com/romangurevitch/go-training/pkg/api/apierror"
 )
 
 // claimsKey is an unexported named type used as a context key for JWT claims.

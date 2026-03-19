@@ -75,9 +75,13 @@ case <-time.After(time.Second):
 > [!WARNING]
 > Accessing shared variables from multiple goroutines without synchronization causes **Race Conditions**. Always run your tests with the `-race` flag.
 
-1. **Goroutine Leaks**: Ensure every goroutine has a clear termination condition so it doesn't stay in memory forever.
-2. **Deadlocks**: Be careful when multiple goroutines are waiting on each other; the Go runtime will crash if all goroutines are blocked.
-3. **Closing Channels**: Only the sender should close a channel, and never close a channel if there are multiple senders.
+1.  **Goroutine Leaks**: Starting a goroutine that never finishes or gets cleaned up.
+2.  **Race Conditions**: Two goroutines accessing shared memory without synchronization. **Always run tests with `-race`!**
+3.  **Deadlocks**: All goroutines are asleep/blocked, waiting for each other.
+4.  **Closing Channels**:
+    - Never close from the receiver side.
+    - Never close if there are multiple concurrent senders.
+    - Closing a closed channel causes a panic.
 
 ---
 

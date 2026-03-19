@@ -1,6 +1,7 @@
 package entity
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -38,12 +39,12 @@ func TestEncapsulation(t *testing.T) {
 }
 
 func TestStructTags(t *testing.T) {
-	// Normally we would use json.Marshal, but we can verify tags reflectively
-	// This is just a conceptual check for beginners.
-
-	u := &user{ID: "3", Name: "Charlie"}
-
-	// Demonstrate how tags are visible (simplified)
-	// In reality, libraries like 'json' use these.
-	assert.NotNil(t, u)
+	// This test demonstrates how struct tags are used by the json package.
+	u := &user{ID: "3", Name: "Charlie", Email: "charlie@example.com"}
+	b, err := json.Marshal(u)
+	assert.NoError(t, err)
+	// The unexported 'role' field is not included in the JSON output,
+	// and the exported fields use the names from the `json` tags.
+	expectedJSON := `{"id":"3","name":"Charlie","email":"charlie@example.com"}`
+	assert.JSONEq(t, expectedJSON, string(b))
 }

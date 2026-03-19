@@ -58,7 +58,3 @@ func (e *CustomError) String() string {
 func ToString[T Stringer](val T) {
 	fmt.Println(val.String())
 }
-
-func PrintString[T Stringer](val T) {
-	fmt.Println(val.String())
-}

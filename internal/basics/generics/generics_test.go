@@ -42,7 +42,7 @@ func TestSumWithUnderlyingTypes(t *testing.T) {
 func TestMap(t *testing.T) {
 	nums := []int{1, 2, 3}
 	strs := Map(nums, func(n int) string {
-		return "num" + string(rune(n+'0'))
+		return "num" + strconv.Itoa(n)
 	})
 
 	assert.Equal(t, []string{"num1", "num2", "num3"}, strs)

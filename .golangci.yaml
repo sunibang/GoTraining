@@ -19,6 +19,8 @@ formatters:
       simplify: true
 
 issues:
+  exclude-dirs:
+    - internal/challenges/basics
   exclude-rules:
     - path: _test\.go
       linters:

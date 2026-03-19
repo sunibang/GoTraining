@@ -54,7 +54,7 @@ func runFactorialTest(t *testing.T, fn func(int) *big.Int) {
 	for _, tt := range commonTestCases {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := fn(tt.n); got.Cmp(tt.want) != 0 {
-				t.Errorf("got %v, want %v", got, tt.want)
+				t.Errorf("factorial(%d): got %v, want %v", tt.n, got, tt.want)
 			}
 		})
 	}

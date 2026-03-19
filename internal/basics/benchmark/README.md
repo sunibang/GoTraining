@@ -119,12 +119,12 @@ go test -bench=. -benchmem ./internal/basics/benchmark/...
 
 ## 🛠️ Comparison Example
 
-From our own benchmarks on an ARM64 CPU:
+From our own benchmarks on an Apple M3 Pro (ARM64):
 
 | Input Size | Iterative (ns/op) | Recursive (ns/op) | Performance Gap |
 |------------|-------------------|-------------------|-----------------|
-| 2          | 45.71             | 39.37             | Recursive is faster (!) |
-| 16         | 154.5             | 158.6             | Iterative pulls ahead |
-| 128        | 1312              | 1874              | **Iterative is 30% faster** |
+| 2          | ~46               | ~39               | Recursive is faster (!) |
+| 16         | ~159              | ~147              | Recursive is still faster |
+| 128        | ~1289             | ~1822             | **Iterative is ~40% faster** |
 
-*Note: Recursion has overhead from stack management and function calls, which becomes more apparent as the input size grows.*
+*Note: The optimized recursive implementation now uses in-place multiplication (`res.Mul`), significantly reducing memory allocations (5 for n=128, matching the iterative version). Iterative only pulls ahead as the input size grows and the overhead of recursive function calls starts to outweigh the loop logic.*

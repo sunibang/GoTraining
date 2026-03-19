@@ -12,7 +12,6 @@ import (
 // Demonstrate how to manually trigger cancellation.
 func TestContextWithCancel(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
 
 	go func() {
 		time.Sleep(10 * time.Millisecond)
@@ -43,69 +42,61 @@ func TestContextWithTimeout(t *testing.T) {
 	}
 }
 
-// 3. Deadline
-// Automatically cancels at a specific point in time.
-func TestContextWithDeadline(t *testing.T) {
-	deadline := time.Now().Add(50 * time.Millisecond)
-	ctx, cancel := context.WithDeadline(context.Background(), deadline)
-	defer cancel()
+// 3. New in Go 1.24: t.Context()
+// This context is automatically cancelled when the test finishes.
+func TestTestingContext(t *testing.T) {
+	ctx := t.Context()
 
-	select {
-	case <-ctx.Done():
-		assert.Equal(t, context.DeadlineExceeded, ctx.Err())
-	case <-time.After(1 * time.Second):
-		t.Fatal("Deadline was never reached")
-	}
+	// Use the context in a long-running operation
+	res, err := doWork(ctx)
+
+	assert.NoError(t, err)
+	assert.Equal(t, 42, res)
+
+	// No need to call cancel() - Go handles it!
 }
 
-// 4. Hierarchy / Propagation
-// When a parent is cancelled, ALL children are cancelled.
-func TestContextHierarchy(t *testing.T) {
-	parentCtx, parentCancel := context.WithCancel(context.Background())
-	childCtx, childCancel := context.WithCancel(parentCtx)
-	defer childCancel() // Good practice, though parentCancel() would handle it too
-
-	parentCancel() // Cancel the parent
-
-	select {
-	case <-childCtx.Done():
-		// The child is automatically cancelled because the parent was
-		assert.Equal(t, context.Canceled, childCtx.Err())
-	case <-time.After(1 * time.Second):
-		t.Fatal("Child context didn't inherit parent cancellation")
-	}
+// 4. Use Case: Authentication
+type User struct {
+	ID   string
+	Role string
 }
 
-// 5. Context Values (Request-Scoped Data)
-// Use custom types for keys to avoid collisions.
-type requestIDKey int
+type authKey int
+const userKey authKey = 0
 
-const ridKey requestIDKey = 0
+func TestContextForAuth(t *testing.T) {
+	user := User{ID: "user-123", Role: "admin"}
 
-func TestContextWithValue(t *testing.T) {
-	ctx := context.WithValue(context.Background(), ridKey, "abc-123")
+	// Set user in context (e.g., in a middleware)
+	ctx := context.WithValue(context.Background(), userKey, user)
 
-	// Retrieval
-	val := ctx.Value(ridKey)
-	assert.Equal(t, "abc-123", val)
+	// Retrieve user from context (e.g., in a handler/service)
+	val := ctx.Value(userKey)
+	assert.NotNil(t, val)
 
-	// Values also propagate down the tree
-	childCtx, cancel := context.WithCancel(ctx)
-	defer cancel()
+	retrievedUser, ok := val.(User)
+	assert.True(t, ok)
+	assert.Equal(t, "admin", retrievedUser.Role)
+}
 
-	childVal := childCtx.Value(ridKey)
-	assert.Equal(t, "abc-123", childVal)
+// 5. Use Case: Tracing
+type traceKey string
+const traceIDKey traceKey = "trace-id"
 
-	// Missing values return nil
-	assert.Nil(t, ctx.Value("non-existent"))
+func TestContextForTracing(t *testing.T) {
+	ctx := context.WithValue(context.Background(), traceIDKey, "tx-999-abc")
+
+	// In a deeply nested function:
+	traceID := ctx.Value(traceIDKey).(string)
+	assert.Equal(t, "tx-999-abc", traceID)
 }
 
 // 6. Practical Pattern: Work Function
 // A common way to structure functions that respect context.
 func doWork(ctx context.Context) (int, error) {
 	// Simulate some async work
-	// Buffered so the goroutine can complete its send even if the caller has returned due to ctx cancellation
-	resCh := make(chan int, 1)
+	resCh := make(chan int)
 	go func() {
 		time.Sleep(50 * time.Millisecond)
 		resCh <- 42

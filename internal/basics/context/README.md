@@ -23,7 +23,18 @@ Contexts are hierarchical. When a parent context is cancelled, all contexts deri
 
 ---
 
-## 2. Creating Contexts
+## 2. Core Use Cases
+
+| Category | Typical Data/Action |
+|----------|---------------------|
+| **Auth** | User ID, Roles, Permissions (via `WithValue`) |
+| **Tracing** | Trace ID, Span ID for observability (via `WithValue`) |
+| **Concurrency** | Stopping background workers, limiting wait times |
+| **I/O Management** | Aborting database queries or HTTP requests when a user disconnects |
+
+---
+
+## 3. Creating Contexts
 
 | Function | Purpose |
 |----------|---------|
@@ -36,26 +47,27 @@ Contexts are hierarchical. When a parent context is cancelled, all contexts deri
 
 ---
 
-## 3. Best Practices (The "Golden Rules")
+## 4. New in Go 1.24+: `t.Context()`
 
-1.  **Pass as First Argument**: Context should always be the first parameter of a function: `func DoWork(ctx context.Context, ...)`.
-2.  **Don't Store in Structs**: Never store a Context inside a struct; pass it explicitly to methods instead.
-3.  **Always Call Cancel**: When using `WithCancel`, `WithTimeout`, or `WithDeadline`, always `defer cancel()`. This releases resources even if the work finishes early.
-4.  **Context is Immutable**: You never "change" a context; you derive a new one from a parent.
-5.  **Values for Metadata Only**: Use `WithValue` only for request-scoped data (e.g., trace IDs, auth tokens), not for passing optional parameters to functions.
+The `testing` package now provides a built-in context that is automatically cancelled when a test (and all its subtests) finishes. This is the **preferred** way to handle context in modern Go tests.
+
+```go
+func TestMyTask(t *testing.T) {
+    ctx := t.Context() // Automatically cancelled when test finishes
+    err := DoSomething(ctx)
+    assert.NoError(t, err)
+}
+```
 
 ---
 
-## 4. Proper `WithValue` Usage
+## 5. Best Practices (The "Golden Rules")
 
-To avoid key collisions between different packages, always use a **custom, unexported type** for your context keys.
-
-```go
-type key int
-const userKey key = 0
-
-ctx := context.WithValue(ctx, userKey, "Alice")
-```
+1.  **Pass as First Argument**: Context should always be the first parameter of a function: `func DoWork(ctx context.Context, ...)`.
+2.  **Don't Store in Structs**: Never store a Context inside a struct; pass it explicitly to methods instead.
+3.  **Always Call Cancel**: When using `WithCancel`, `WithTimeout`, or `WithDeadline`, always `defer cancel()`. This releases resources even if the work finishes early (not needed for `t.Context()`).
+4.  **Context is Immutable**: You never "change" a context; you derive a new one from a parent.
+5.  **Values for Metadata Only**: Use `WithValue` only for request-scoped data (e.g., trace IDs, auth tokens), not for passing optional parameters to functions.
 
 ---
 
@@ -73,7 +85,7 @@ defer cancel() // Timer is stopped when function returns
 
 ## 🧪 Running the Examples
 
-Explore `context_test.go` for practical examples of cancellation and timeouts.
+Explore `context_test.go` for practical examples of cancellation, tracing, and `t.Context()`.
 
 ```bash
 go test -v ./internal/basics/context/...

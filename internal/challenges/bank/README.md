@@ -2,7 +2,7 @@
 
 Welcome to the **Go Bank Transfer Quest**! In this challenge, you will implement a `POST /v1/transfers` endpoint in a pre-scaffolded Go bank service. 
 
-This quest focuses on idiomatic Go HTTP handler patterns, OpenTelemetry tracing, structured logging (`log/slog`), JWT authentication/authorization, and handler testing — without getting distracted by database or repository concerns. 
+This quest focuses on idiomatic Go HTTP handler patterns, OpenTelemetry tracing, structured logging (`log/slog`), JWT authentication/authorisation, and handler testing — without getting distracted by database or repository concerns. 
 
 Everything below the API layer is pre-built. If you want to understand how the underlying layers work, check out the [Go Bank Architecture](../../bank/README.md).
 
@@ -34,11 +34,11 @@ Complete the partially filled `transfers.yaml` spec.
 **File:** [internal/bank/api/server.go](../../bank/api/server.go)
 
 **Context:**
-The API server uses Gin as the HTTP router. It groups routes logically and applies middleware (like JWT authorization, logging, and tracing). The accounts group is already wired up as your reference.
+The API server uses Gin as the HTTP router. It groups routes logically and applies middleware (like JWT authorisation, logging, and tracing). The accounts group is already wired up as your reference.
 
 **Task:**
 - Open `internal/bank/api/server.go`.
-- Uncomment the `transferHandler := transfer.New(svc)` initialization.
+- Uncomment the `transferHandler := transfer.New(svc)` initialisation.
 - Wire the `POST /v1/transfers` route using the exact same pattern as the accounts routes.
 - Apply `middleware.JWTMiddleware` to the new group.
 - Apply `middleware.RequireScope("transfers:write")` to the specific route.
@@ -55,7 +55,7 @@ The API server uses Gin as the HTTP router. It groups routes logically and appli
 **File:** [internal/bank/api/transfer/handler.go](../../bank/api/transfer/handler.go)
 
 **Context:**
-This is the core of the quest. You need to implement the `CreateTransfer` HTTP handler. You will extract the request body, start an OpenTelemetry trace, check business authorization rules (does the caller own the source account?), call the service layer, and accurately map domain errors to HTTP errors.
+This is the core of the quest. You need to implement the `CreateTransfer` HTTP handler. You will extract the request body, start an OpenTelemetry trace, check business authorisation rules (does the caller own the source account?), call the service layer, and accurately map domain errors to HTTP errors.
 
 **Task:**
 The handler skeleton contains 5 guided `TODO`s. Each `TODO` points directly to the exact line in the reference `api/account/handler.go` that demonstrates the pattern.
@@ -107,7 +107,7 @@ We use table-driven tests and `httptest` to unit test the handler isolated from 
 APIs are useless without clients. Building a strongly-typed Go client makes integration easy for CLI tools, web frontends, and other microservices.
 
 **Task:**
-1. **File:** [pkg/client/bank/client.go](../../../pkg/client/bank/client.go) — Implement the `Transfer` method. Look at `GetAccount` to see how we build the URL, set headers (especially `Authorization: Bearer`), serialize the JSON body, and execute `httppkg.DoRequest`.
+1. **File:** [pkg/client/bank/client.go](../../../pkg/client/bank/client.go) — Implement the `Transfer` method. Look at `GetAccount` to see how we build the URL, set headers (especially `Authorization: Bearer`), serialise the JSON body, and execute `httppkg.DoRequest`.
 2. **File:** [internal/bank/cli/transfer/transfer.go](../../bank/cli/transfer/transfer.go) — Wire up the CLI command. Parse the CLI arguments and invoke your newly written `bankClient.Transfer` method.
 
 **Definition of Done:**

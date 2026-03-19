@@ -6,7 +6,7 @@ Welcome to the **API Layer**—the front door of Go Bank! This package handles a
 
 - **Routing:** Mapping URLs like `/v1/transfers` to the right Go functions.
 - **Parsing & Validation:** Extracting JSON payloads and ensuring the data is correct before our service layer ever sees it.
-- **Middleware Magic:** Orchestrating cross-cutting concerns like JWT authorization, OpenTelemetry tracing, and structured logging (`slog`).
+- **Middleware Magic:** Orchestrating cross-cutting concerns like JWT authorisation, OpenTelemetry tracing, and structured logging (`slog`).
 - **Response Formatting:** Returning clean JSON successes or translating domain errors into the right HTTP status codes.
 
 ## How to navigate

@@ -18,4 +18,4 @@ go build --tags buildTagsDemo_2 main.go
 
 [Build Tags In Go](https://medium.com/@tharun208/build-tags-in-go-f21ccf44a1b8)
 
-[Customizing Go Binaries with Build Tags](https://www.digitalocean.com/community/tutorials/customizing-go-binaries-with-build-tags)
+[Customising Go Binaries with Build Tags](https://www.digitalocean.com/community/tutorials/customizing-go-binaries-with-build-tags)

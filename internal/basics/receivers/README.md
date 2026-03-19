@@ -3,7 +3,7 @@
 ## Pointer Receiver Use Cases
 
 - If the method needs to mutate the receiver, the receiver must be a pointer.
-- If the receiver is a struct that contains a sync.Mutex or similar synchronizing field, the receiver must be a pointer to avoid copying.
+- If the receiver is a struct that contains a sync.Mutex or similar synchronising field, the receiver must be a pointer to avoid copying.
 - If the receiver is a large struct or array, a pointer receiver is more efficient. How large is large? Assume it's equivalent to passing all its elements as arguments to the method. If that feels too large, it's also too large for the receiver.
 - If the receiver is a struct, array or slice and any of its elements is a pointer to something that might be mutating, prefer a pointer receiver, as it will make the intention clearer to the reader.
 - When in doubt, use a pointer receiver.

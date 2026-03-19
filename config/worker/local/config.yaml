@@ -1,0 +1,7 @@
+temporal:
+  host: localhost
+  port: 7233
+  taskQueueName: order-processor-queue
+
+inventoryApi:
+  baseUrl: http://localhost:8080

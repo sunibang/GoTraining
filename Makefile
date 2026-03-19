@@ -3,6 +3,7 @@ include build.mk
 include test.mk
 include docker.mk
 include db.mk
+include internal/temporal/temporal.mk
 
 # Detect docker compose or docker-compose
 DOCKER_COMPOSE := $(shell docker compose version > /dev/null 2>&1 && echo "docker compose" || echo "docker-compose")

@@ -1,4 +1,4 @@
-# Challenge 1: Build a Safe HTTP Client
+# Challenge 05: Build a Safe HTTP Client
 
 **Difficulty:** Basic
 **Covers:** `http`, `httptest`, `pointers`

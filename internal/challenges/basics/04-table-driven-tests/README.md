@@ -1,4 +1,4 @@
-# Challenge 2: Table-Driven Test Coverage
+# Challenge 04: Table-Driven Test Coverage
 
 **Difficulty:** Basic
 **Covers:** `testing`, `testify`

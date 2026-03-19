@@ -1,4 +1,4 @@
-# Challenge 6: Concurrent Worker Pool with Testing
+# Challenge 09: Concurrent Worker Pool with Testing
 
 **Difficulty:** Advanced
 **Covers:** `concurrency`, `testing`, `receivers`, `parameters`, `testify`

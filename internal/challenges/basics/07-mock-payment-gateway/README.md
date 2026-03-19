@@ -1,4 +1,4 @@
-# Challenge 4: Mock a Payment Gateway
+# Challenge 07: Mock a Payment Gateway
 
 **Difficulty:** Intermediate
 **Covers:** `mocking`, `interface`, `testing`
@@ -47,7 +47,7 @@ func (s *PaymentService) Refund(id string) error
 
 ```bash
 mockgen -destination=mocks/mock_gateway.go -package=mocks \
-    github.com/romangurevitch/go-training/internal/basics/challenges/intermediate/04-mock-payment-gateway/payment Gateway
+    github.com/romangurevitch/go-training/internal/challenges/basics/07-mock-payment-gateway/payment Gateway
 ```
 
 ### 4. Write tests for

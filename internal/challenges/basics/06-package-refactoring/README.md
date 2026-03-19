@@ -1,4 +1,4 @@
-# Challenge 3: Package Refactoring
+# Challenge 06: Package Refactoring
 
 **Difficulty:** Intermediate
 **Covers:** `layout`, `init`, `receivers`

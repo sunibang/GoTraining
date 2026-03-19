@@ -1,4 +1,4 @@
-# Challenge 5: Embeddable Middleware Chain
+# Challenge 08: Embeddable Middleware Chain
 
 **Difficulty:** Advanced
 **Covers:** `interface`, `http`, `context`, `receivers`, `mocking`

@@ -1,23 +1,18 @@
 # 🚀 Benchmarking in Go
 
-Benchmarking is the process of measuring the performance of your code. Go provides a powerful, built-in benchmarking tool as part of the `testing` package to help you establish baselines and prove optimizations.
+Benchmarking is the process of measuring the performance of your code. Go provides a powerful, built-in benchmarking tool as part of the `testing` package.
+
+## 📌 Why Benchmark?
+- **Performance Baseline**: Know how fast your code is today.
+- **Optimization**: Prove that your "faster" version actually is faster.
+- **Regression Testing**: Ensure new changes don't slow down critical paths.
+- **Resource Usage**: Track memory allocations and CPU efficiency.
 
 ---
 
-## 1. Core Concepts
+## 🏗️ How Benchmarks Work
 
-| Concept | Description / Purpose |
-| :--- | :--- |
-| **`b.N`** | The number of iterations. Go automatically increases this until results are statistically significant. |
-| **`b.ResetTimer()`** | Resets the timer to exclude expensive setup logic from the benchmark results. |
-| **`-benchmem`** | A flag to include memory allocation statistics (B/op and allocs/op). |
-| **Compiler Optimization** | The risk where the compiler removes "unused" code, leading to misleadingly fast results. |
-
----
-
-## 2. 🖼️ Visual Representation
-
-Go's benchmark runner uses an iterative workflow to find the stable execution time.
+Go's benchmark runner calls your function repeatedly until it can provide a statistically significant result.
 
 ```text
   +-------------------------------------------------------+
@@ -38,9 +33,12 @@ Go's benchmark runner uses an iterative workflow to find the stable execution ti
 
 ---
 
-## 3. 📝 Implementation Examples
+## ✍️ Anatomy of a Benchmark Function
 
-### Anatomy of a Benchmark
+Benchmarks must follow these rules:
+1. Reside in a `_test.go` file.
+2. Function name starts with `Benchmark`.
+3. Take exactly one argument: `b *testing.B`.
 
 ```go
 func BenchmarkMyFunction(b *testing.B) {
@@ -59,40 +57,74 @@ func BenchmarkMyFunction(b *testing.B) {
 
 ---
 
-## 4. 🚀 Common Patterns & Use Cases
+## 🏃 Running Benchmarks
 
-- **Performance Regression Testing**: Running benchmarks in CI to ensure new PRs don't slow down critical paths.
-- **Implementation Comparison**: Comparing two algorithms (e.g., Iterative vs. Recursive) to see which scales better as input size grows.
-- **Memory Profiling**: Identifying functions that allocate too much on the heap, leading to GC pressure.
+Use the `go test` command with the `-bench` flag.
 
----
-
-## 5. ⚠️ Critical Pitfalls & Best Practices
-
-> [!WARNING]
-> If your function is too simple and its result isn't used, the Go compiler might "optimise" it away entirely. To prevent this, assign the result to a package-level variable.
-
-1. **Always use `-benchmem`**: It's almost always relevant to see how much memory your code allocates.
-2. **Avoid Side Effects**: Ensure your benchmark loop doesn't have side effects that affect subsequent iterations (e.g., appending to the same global slice).
-3. **Reset the Timer**: Use `b.ResetTimer()` if you have more than a few microseconds of setup.
+| Command | Description |
+|---------|-------------|
+| `go test -bench=.` | Run all benchmarks in current directory |
+| `go test -bench=MyFunction` | Run specific benchmark |
+| `go test -bench=. -benchmem` | **(Recommended)** Show memory allocations |
+| `go test -bench=. -benchtime=5s` | Run for 5 seconds instead of 1 |
+| `go test -bench=. -count=5` | Run 5 times (helps find variance) |
 
 ---
 
-## 🧪 Running the Examples
+## 📊 Understanding the Output
 
-Explore the unit tests to see a comparison between iterative and recursive factorial implementations.
+When you run `go test -bench=. -benchmem`, you'll see something like this:
 
+`BenchmarkTest128-11    965350    1312 ns/op    312 B/op    5 allocs/op`
+
+1.  **`BenchmarkTest128-11`**: The name of the benchmark. The `-11` is the number of CPUs used (GOMAXPROCS).
+2.  **`965350`**: The value of `b.N`. The function was executed ~1 million times.
+3.  **`1312 ns/op`**: Average time per operation (Nanoseconds). **Lower is better.**
+4.  **`312 B/op`**: Average memory allocated per operation (Bytes). **Lower is better.**
+5.  **`5 allocs/op`**: Average number of heap allocations per operation. **Lower is better.**
+
+---
+
+## 💡 Pro Tips for Starters
+
+### 1. `b.ResetTimer()` is your friend
+Use it if you have a long setup before the loop starts.
+
+### 2. Don't be fooled by the Compiler
+If your function is too simple and its result isn't used, the Go compiler might "optimise" it away entirely, giving you 0.01 ns/op results. To prevent this, assign the result to a package-level variable:
+
+```go
+var result int
+
+func BenchmarkAdd(b *testing.B) {
+    var r int
+    for i := 0; i < b.N; i++ {
+        r = Add(1, 2)
+    }
+    result = r // Prevent compiler optimization
+}
+```
+
+### 3. Iterative vs. Recursive
+In the `benchmark.go` file in this directory, we compare two ways of calculating factorials:
+- `IterativeFactorial` (Iterative)
+- `RecursiveFactorial` (Recursive)
+
+**Run it yourself to see which one scales better!**
 ```bash
-# Run all benchmarks with memory statistics
 go test -bench=. -benchmem ./internal/basics/benchmark/...
-
-# Run for a specific time to get more stable results
-go test -bench=. -benchtime=5s ./internal/basics/benchmark/...
 ```
 
 ---
 
-## 📚 Further Reading
+## 🛠️ Comparison Example
 
-- [Go Documentation: Package testing](https://pkg.go.dev/testing#hdr-Benchmarks)
-- [Go by example: Testing and Benchmarking](https://gobyexample.com/testing-and-benchmarking)
+From our own benchmarks on an Apple M3 Pro (ARM64):
+
+| Input Size | Iterative (ns/op) | Recursive (ns/op) | Performance Gap |
+|------------|-------------------|-------------------|-----------------|
+| 2          | ~46               | ~39               | Recursive is faster (!) |
+| 16         | ~159              | ~147              | Recursive is still faster |
+| 128        | ~1289             | ~1822             | **Iterative is ~40% faster** |
+
+*Note: The optimized recursive implementation now uses in-place multiplication (`res.Mul`), significantly reducing memory allocations (5 for n=128, matching the iterative version). Iterative only pulls ahead as the input size grows and the overhead of recursive function calls starts to outweigh the loop logic.*

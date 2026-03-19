@@ -1,25 +1,14 @@
 # 📦 Embedding in Go
 
-Go uses the term "embedding" for two distinct features: **Struct Embedding** (composition) and the **`go:embed` directive** (static assets). Both simplify code structure and deployment.
+Go uses the term "embedding" in two different contexts: **Struct Embedding** (for composition) and the **`go:embed` directive** (for static assets). Both are powerful features that simplify your code and deployments.
 
 ---
 
-## 1. Core Concepts
+## 1. Struct Embedding (Composition)
 
-| Concept | Description / Purpose |
-| :--- | :--- |
-| **Struct Embedding** | Composing structs by including one inside another without a field name. |
-| **Method Promotion** | Embedded fields and methods "surface" to the outer struct automatically. |
-| **`go:embed`** | A compiler directive to include static files directly into the compiled binary. |
-| **`embed.FS`** | A read-only virtual filesystem for managing multiple embedded files. |
+Go does not have classes or inheritance. Instead, it uses **composition** through struct embedding. When you embed one struct into another, the outer struct "borrows" the fields and methods of the inner one.
 
----
-
-## 2. 🖼️ Visual Representation
-
-### Struct Embedding (Composition)
-Unlike inheritance, embedding is about "has-a" relationships that look like "is-a".
-
+### 🖼️ Conceptual View
 ```text
   Traditional Inheritance        Go Struct Embedding
   +-----------+                  +-----------+
@@ -32,80 +21,73 @@ Unlike inheritance, embedding is about "has-a" relationships that look like "is-
   +-----------+
 ```
 
-### File Embedding
+### 📝 Example
+```go
+type User struct {
+    Name string
+}
+func (u User) Greet() string { return "Hi, I'm " + u.Name }
+
+type Admin struct {
+    User  // <--- Embedded! No field name.
+    Level int
+}
+
+a := Admin{User: User{Name: "Alice"}, Level: 1}
+fmt.Println(a.Greet()) // "Hi, I'm Alice" (Promoted method)
+fmt.Println(a.Name)    // "Alice" (Promoted field)
+```
+
+---
+
+## 2. File Embedding (`go:embed`)
+
+Introduced in Go 1.16, the `embed` package allows you to include static files (like config, HTML, or images) directly into your compiled binary. No more missing config files in production!
+
+### 🖼️ The Process
 ```text
-  Source Code + Assets              Single Binary
+  Source Code + Asset Files         Single Binary
   +-------------+                   +-------------+
   | main.go     |                   |  [Binary]   |
   | config.json |  --- go build --> |  [Data]     |
   | logo.png    |                   |  [Logic]    |
   +-------------+                   +-------------+
+                                     (Runs anywhere!)
 ```
 
----
-
-## 3. 📝 Implementation Examples
-
-### Struct Embedding
-
-```go
-type Logger struct {}
-func (l Logger) Log(msg string) { fmt.Println(msg) }
-
-type Service struct {
-    Logger // Anonymous embedding
-}
-
-s := Service{}
-s.Log("Service started") // Promoted method!
-```
-
-### File Embedding
-
+### 📝 Example
 ```go
 import "embed"
 
-//go:embed version.txt
-var version string
+//go:embed hello.txt
+var hello string
 
-//go:embed static/*
-var content embed.FS
+//go:embed config/*.yaml
+var configFS embed.FS // Embed multiple files as a filesystem
 ```
 
 ---
 
-## 4. 🚀 Common Patterns & Use Cases
+## 3. Key Differences & Pitfalls
 
-- **Composition over Inheritance**: Building complex types by combining smaller, reusable structs.
-- **Zero-Dependency Binaries**: Embedding HTML templates, CSS, or SQL migrations into the binary for easier deployment.
-- **Interface Satisfaction**: Embedding an interface in a struct to "mock" only the methods needed for a specific test.
+### Struct Embedding
+- **Shadowing**: If both structs have a field named `ID`, the outer one "wins." You can still access the inner one via `outer.Inner.ID`.
+- **Not Subtyping**: An `Admin` is **not** a `User`. You cannot pass an `Admin` to a function expecting a `User`.
 
----
-
-## 5. ⚠️ Critical Pitfalls & Best Practices
-
-> [!WARNING]
-> Embedded files are **Read-Only** at runtime. You cannot modify them without recompiling the binary.
-
-1. **Shadowing**: If both the outer and inner structs have a field with the same name, the outer one wins.
-2. **Not Subtyping**: An `Admin` struct that embeds a `User` is **NOT** a `User` type; you cannot pass it to a function expecting `User`.
-3. **Import Required**: Even if you don't use `embed.FS`, you must `import _ "embed"` for the directive to work.
-4. **Global Scope**: `//go:embed` only works on package-level variables, not inside functions.
+### File Embedding
+- **Read-Only**: Files embedded via `go:embed` are read-only at runtime.
+- **Global Only**: The `//go:embed` directive only works on global (package-level) variables.
+- **Import Required**: You must `import _ "embed"` (or just `import "embed"`) even if you don't use the `embed.FS` type.
 
 ---
 
 ## 🧪 Running the Examples
 
-Explore the unit tests for runnable patterns covering struct composition and the `go:embed` directive.
+Explore the unit tests for runnable patterns:
+- `embed_basics_test.go`: Struct and method promotion.
+- `embed_playground_test.go`: Shadowing and overshadowing methods.
+- `embed_file_test.go`: Using the `go:embed` directive.
 
 ```bash
-# Run tests for embedding patterns
 go test -v ./internal/basics/embed/...
 ```
-
----
-
-## 📚 Further Reading
-
-- [Effective Go: Embedding](https://go.dev/doc/effective_go#embedding)
-- [Go Blog: Package embed](https://go.dev/blog/embed)

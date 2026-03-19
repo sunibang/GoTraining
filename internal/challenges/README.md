@@ -23,10 +23,15 @@ Exercises with `panic("implement me!")` stubs. Your task: implement the function
 
 ## bank/
 
-The main challenge — implement the full Go Bank service layer:
-1. Domain models (`internal/bank/domain/`)
-2. Store / repository (`internal/bank/store/`)
-3. Service / business logic (`internal/bank/service/`)
-4. HTTP API (`internal/bank/api/`)
+The **[Go Bank Transfer Quest](bank/README.md)** is our main challenge! 
+
+You'll implement the `POST /v1/transfers` API endpoint in a pre-scaffolded service, focusing on:
+- Idiomatic HTTP handler patterns using Gin.
+- OpenTelemetry tracing and structured logging with `slog`.
+- JWT authentication and scope-based authorisation.
+- Table-driven unit testing for handlers.
+
+Everything below the API layer is pre-built so you can focus on building production-grade APIs.
 
 Run tests with: `make test-bank`
+

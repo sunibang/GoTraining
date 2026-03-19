@@ -1,6 +1,26 @@
 # Tools Makefile - Versioned Tool Management
 # This file manages all external tools with specific versions for reproducible builds
 
+# Platform detection
+OS := $(shell uname -s | tr '[:upper:]' '[:lower:]')
+ARCH := $(shell uname -m)
+
+ifeq ($(OS),darwin)
+	PROTOC_OS := osx
+else ifeq ($(OS),linux)
+	PROTOC_OS := linux
+else
+	PROTOC_OS := $(OS)
+endif
+
+ifeq ($(ARCH),x86_64)
+	PROTOC_ARCH := x86_64
+else ifneq ($(filter arm64 aarch64,$(ARCH)),)
+	PROTOC_ARCH := aarch_64
+else
+	PROTOC_ARCH := $(ARCH)
+endif
+
 # Tool versions
 GOLANGCI_LINT_VERSION := v2.11.3
 MOCKERY_VERSION := v3.7.0
@@ -46,7 +66,7 @@ $(MOCKERY):
 # protoc installation with version
 $(PROTOC):
 	@mkdir -p ./tools
-	curl -sSfL https://github.com/protocolbuffers/protobuf/releases/download/$(PROTOC_VERSION)/protoc-$(subst v,,$(PROTOC_VERSION))-osx-aarch_64.zip -o protoc.zip
+	curl -sSfL https://github.com/protocolbuffers/protobuf/releases/download/$(PROTOC_VERSION)/protoc-$(subst v,,$(PROTOC_VERSION))-$(PROTOC_OS)-$(PROTOC_ARCH).zip -o protoc.zip
 	unzip protoc.zip
 	mv bin/protoc $@
 	mv include ./tools/include

@@ -1,4 +1,4 @@
-# Module 1: Cloud API Engineering Principles
+# Module 1: Modern API Engineering Principles
 
 **Duration:** Day 1, morning (09:30–11:15)
 **Location:** `internal/fundamentals/`

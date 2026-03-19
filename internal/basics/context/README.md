@@ -4,20 +4,11 @@ The `context` package is one of Go's most important tools for managing **cancell
 
 ---
 
-## 1. Core Concepts
+## 1. What is Context?
 
-| Concept | Description / Purpose |
-| :--- | :--- |
-| **`Context` Interface** | A thread-safe object that carries deadlines and signals cancellation. |
-| **Cancellation** | Propagating a "stop" signal down the call tree to release resources. |
-| **Deadlines / Timeouts** | Automatically cancelling a process after a specific time or duration. |
-| **Request Values** | Carrying metadata like Trace IDs or User Auth through a call graph. |
+A `Context` is a thread-safe object that carries information through a call graph. Its primary purpose is to signal when a process should stop working and return.
 
----
-
-## 2. 🖼️ Visual Representation
-
-### The Context Tree
+### 🖼️ The Context Tree
 Contexts are hierarchical. When a parent context is cancelled, all contexts derived from it are also cancelled.
 
 ```text
@@ -32,69 +23,70 @@ Contexts are hierarchical. When a parent context is cancelled, all contexts deri
 
 ---
 
-## 3. 📝 Implementation Examples
+## 2. Core Use Cases
 
-### Standard Cancellation Pattern
+| Category | Typical Data/Action |
+|----------|---------------------|
+| **Auth** | User ID, Roles, Permissions (via `WithValue`) |
+| **Tracing** | Trace ID, Span ID for observability (via `WithValue`) |
+| **Concurrency** | Stopping background workers, limiting wait times |
+| **I/O Management** | Aborting database queries or HTTP requests when a user disconnects |
+
+---
+
+## 3. Creating Contexts
+
+| Function | Purpose |
+|----------|---------|
+| `context.Background()` | The root context; typically used in `main` or top-level requests. |
+| `context.TODO()` | Use when you're unsure which context to use or it's not yet available. |
+| `context.WithCancel(parent)` | Returns a child and a `cancel` function to stop it manually. |
+| `context.WithTimeout(parent, duration)` | Automatically cancels after a specific duration. |
+| `context.WithDeadline(parent, time)` | Automatically cancels at a specific clock time. |
+| `context.WithValue(parent, key, val)` | Carries request-scoped data (use sparingly!). |
+
+---
+
+## 4. New in Go 1.24+: `t.Context()`
+
+The `testing` package now provides a built-in context that is automatically cancelled when a test (and all its subtests) finishes. This is the **preferred** way to handle context in modern Go tests.
 
 ```go
-func DoWork(ctx context.Context) error {
-    for {
-        select {
-        case <-ctx.Done():
-            // Context was cancelled or timed out
-            return ctx.Err()
-        default:
-            // Continue working
-            processNextItem()
-        }
-    }
-}
-```
-
-### Modern Testing with `t.Context()` (Go 1.24+)
-
-```go
-func TestMyService(t *testing.T) {
-    ctx := t.Context() // Automatically cancelled when test completes
-    err := CallAPI(ctx)
+func TestMyTask(t *testing.T) {
+    ctx := t.Context() // Automatically cancelled when test finishes
+    err := DoSomething(ctx)
     assert.NoError(t, err)
 }
 ```
 
 ---
 
-## 4. 🚀 Common Patterns & Use Cases
+## 5. Best Practices (The "Golden Rules")
 
-- **HTTP Request Lifecycle**: Using the request context to abort database queries if the user disconnects.
-- **Microservice Tracing**: Passing a `TraceID` via `context.WithValue` to link logs across multiple services.
-- **Graceful Shutdown**: Signaling background workers to stop when the main application receives an interrupt signal.
+1.  **Pass as First Argument**: Context should always be the first parameter of a function: `func DoWork(ctx context.Context, ...)`.
+2.  **Don't Store in Structs**: Never store a Context inside a struct; pass it explicitly to methods instead.
+3.  **Always Call Cancel**: When using `WithCancel`, `WithTimeout`, or `WithDeadline`, always `defer cancel()`. This releases resources even if the work finishes early (not needed for `t.Context()`).
+4.  **Context is Immutable**: You never "change" a context; you derive a new one from a parent.
+5.  **Values for Metadata Only**: Use `WithValue` only for request-scoped data (e.g., trace IDs, auth tokens), not for passing optional parameters to functions.
 
 ---
 
-## 5. ⚠️ Critical Pitfalls & Best Practices
+## ⚠️ Critical Pitfall: Goroutine Leaks
 
-> [!WARNING]
-> If you create a `WithTimeout` context and don't call `cancel()`, the timer will keep running until it expires, causing a **Goroutine Leak**. Always `defer cancel()`.
+If you create a `WithTimeout` context and don't call `cancel()`, the timer will keep running in the background until it expires, even if your function has already returned. This is a "goroutine leak."
 
-1. **Pass as First Argument**: Context should always be the first parameter: `func Do(ctx context.Context, ...)`.
-2. **Don't Store in Structs**: Pass context explicitly through function calls to keep the execution path clear.
-3. **Values for Metadata Only**: Never use `WithValue` for passing optional parameters; it's for request-scoped data (Auth, Tracing) only.
-4. **Context is Immutable**: You never modify a context; you always derive a new child from a parent.
+```go
+// GOOD
+ctx, cancel := context.WithTimeout(parent, time.Hour)
+defer cancel() // Timer is stopped when function returns
+```
 
 ---
 
 ## 🧪 Running the Examples
 
-Explore the unit tests for runnable patterns covering cancellation, timeouts, and the new `t.Context()` helper.
+Explore `context_test.go` for practical examples of cancellation, tracing, and `t.Context()`.
 
 ```bash
-# Run tests for context patterns
 go test -v ./internal/basics/context/...
 ```
-
----
-
-## 📚 Further Reading
-
-- [Official Go Blog: Go Concurrency Patterns: Context](https://go.dev/blog/context)
-- [Go Documentation: Package context](https://pkg.go.dev/context)

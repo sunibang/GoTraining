@@ -103,19 +103,22 @@ We use table-driven tests and `httptest` to unit test the handler isolated from 
   make test-bank
   ```
 
-### Bonus Quest: Transfer Client & CLI
+### Bonus Quest 1: Check Account Balance CLI
 
 **Context:**
-APIs are useless without clients. Building a strongly-typed Go client makes integration easy for CLI tools, web frontends, and other microservices.
+APIs are useless without clients. Building a strongly-typed Go client makes integration easy for CLI tools, web frontends, and other microservices. Before moving money around, you need to be able to observe account state. This is the simplest introduction to the CLI → client → API pattern: the client method already exists, so your only job is to call it and display the result.
 
 **Task:**
-1. **File:** [pkg/client/bank/client.go](../../../pkg/client/bank/client.go) — Implement the `Transfer` method. Look at `GetAccount` to see how we build the URL, set headers (especially `Authorization: Bearer`), serialise the JSON body, and execute `httppkg.DoRequest`.
-2. **File:** [internal/bank/cli/transfer/transfer.go](../../bank/cli/transfer/transfer.go) — Wire up the CLI command. Parse the CLI arguments and invoke your newly written `bankClient.Transfer` method.
+1. **File:** [internal/bank/cli/account/balance.go](../../bank/cli/account/balance.go) — Wire up the CLI command. Parse the CLI arguments and invoke `bankClient.GetAccount`.
 
 **Definition of Done:**
 - Start the infrastructure:
   ```bash
   make db-up
+  ```
+- Migrate the database:
+  ```bash
+  make migrate
   ```
 - Build the binaries:
   ```bash
@@ -130,6 +133,26 @@ APIs are useless without clients. Building a strongly-typed Go client makes inte
   ```bash
   export BANK_TOKEN="<your-token-here>"
   ```
+- Confirm the command returns the balance:
+  ```bash
+  ./bin/bank-cli account balance ACC-1
+  ```
+
+### Bonus Quest 2: Transfer Client & CLI
+
+**Context:**
+Now that you've seen how the CLI consumes an existing client method, it's time to implement both sides from scratch. You'll write the `Transfer` client method and wire up the CLI command that calls it.
+
+**Task:**
+1. **File:** [pkg/client/bank/client.go](../../../pkg/client/bank/client.go) — Implement the `Transfer` method. Look at `GetAccount` to see how we build the URL, set headers (especially `Authorization: Bearer`), serialise the JSON body, and execute `httppkg.DoRequest`.
+2. **File:** [internal/bank/cli/transfer/transfer.go](../../bank/cli/transfer/transfer.go) — Wire up the CLI command. Parse the CLI arguments and invoke your newly written `bankClient.Transfer` method.
+
+**Definition of Done:**
+- Build the binaries:
+  ```bash
+  make build
+  ```
+- Ensure the API server is running (see Bonus Quest 1 setup if needed).
 - Check out the CLI's built-in documentation:
   ```bash
   ./bin/bank-cli help

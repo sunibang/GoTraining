@@ -24,66 +24,48 @@ func BenchmarkTestRec128(b *testing.B) { benchmarkTestRec(128, b) }
 
 func benchmarkTestRec(n int, b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		mysteriousFunctionRec(n)
+		RecursiveFactorial(n)
 	}
 }
 
 func benchmarkTest(n int, b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		mysteriousFunction(n)
+		IterativeFactorial(n)
 	}
 }
 
-func Test_mysteriousFunctionRec(t *testing.T) {
-	type args struct {
-		n int
-	}
-	tests := []struct {
-		name string
-		args args
-		want *big.Int
-	}{
-		{name: "-1", args: args{n: -1}, want: big.NewInt(1)},
-		{name: "0", args: args{n: 0}, want: big.NewInt(1)},
-		{name: "1", args: args{n: 1}, want: big.NewInt(1)},
-		{name: "2", args: args{n: 2}, want: big.NewInt(2)},
-		{name: "3", args: args{n: 3}, want: big.NewInt(6)},
-		{name: "4", args: args{n: 4}, want: big.NewInt(24)},
-		{name: "70", args: args{n: 70}, want: fromString("11978571669969891796072783721689098736458938142546425857555362864628009582789845319680000000000000000")},
-	}
-	for _, tt := range tests {
+type testCase struct {
+	name string
+	n    int
+	want *big.Int
+}
+
+var commonTestCases = []testCase{
+	{name: "-1", n: -1, want: big.NewInt(1)},
+	{name: "0", n: 0, want: big.NewInt(1)},
+	{name: "1", n: 1, want: big.NewInt(1)},
+	{name: "2", n: 2, want: big.NewInt(2)},
+	{name: "3", n: 3, want: big.NewInt(6)},
+	{name: "4", n: 4, want: big.NewInt(24)},
+	{name: "70", n: 70, want: fromString("11978571669969891796072783721689098736458938142546425857555362864628009582789845319680000000000000000")},
+}
+
+func runFactorialTest(t *testing.T, fn func(int) *big.Int) {
+	for _, tt := range commonTestCases {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := mysteriousFunctionRec(tt.args.n); got.Cmp(tt.want) != 0 {
-				t.Errorf("mysteriousFunctionRec() = %v, want %v", got, tt.want)
+			if got := fn(tt.n); got.Cmp(tt.want) != 0 {
+				t.Errorf("factorial(%d): got %v, want %v", tt.n, got, tt.want)
 			}
 		})
 	}
 }
 
-func Test_mysteriousFunction(t *testing.T) {
-	type args struct {
-		n int
-	}
-	tests := []struct {
-		name string
-		args args
-		want *big.Int
-	}{
-		{name: "-1", args: args{n: -1}, want: big.NewInt(1)},
-		{name: "0", args: args{n: 0}, want: big.NewInt(1)},
-		{name: "1", args: args{n: 1}, want: big.NewInt(1)},
-		{name: "2", args: args{n: 2}, want: big.NewInt(2)},
-		{name: "3", args: args{n: 3}, want: big.NewInt(6)},
-		{name: "4", args: args{n: 4}, want: big.NewInt(24)},
-		{name: "70", args: args{n: 70}, want: fromString("11978571669969891796072783721689098736458938142546425857555362864628009582789845319680000000000000000")},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := mysteriousFunction(tt.args.n); got.Cmp(tt.want) != 0 {
-				t.Errorf("mysteriousFunctionRec() = %v, want %v", got, tt.want)
-			}
-		})
-	}
+func Test_RecursiveFactorial(t *testing.T) {
+	runFactorialTest(t, RecursiveFactorial)
+}
+
+func Test_IterativeFactorial(t *testing.T) {
+	runFactorialTest(t, IterativeFactorial)
 }
 
 func fromString(s string) *big.Int {

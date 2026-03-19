@@ -1,65 +1,80 @@
 package casting
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
-// Read more at:
-// https://golang.org/ref/spec#Type_assertions
-func TestAssertions(t *testing.T) {
-	entityInterfaceInstance := New()
-	err := entityInterfaceInstance.Do("the first thing")
-	assert.NoError(t, err)
+func TestSafeAssertion(t *testing.T) {
+	var i interface{} = "hello"
 
-	// I want to run 'DoSomethingElse'.
-	entityStruct, ok := entityInterfaceInstance.(*entity)
+	// comma-ok pattern
+	s, ok := i.(string)
 	assert.True(t, ok)
+	assert.Equal(t, "hello", s)
 
-	err = entityStruct.DoSomethingElse("the second thing")
-	assert.NoError(t, err)
-
-	// What will happen in this case?
-	//entity2Struct, ok := entityInterfaceInstance.(*entity2)
-	//assert.True(t, ok)
-	//err = entity2Struct.DoAThirdThing("do something else")
-	//assert.NoError(t, err)
+	// failed assertion (safe)
+	f, ok := i.(float64)
+	assert.False(t, ok)
+	assert.Equal(t, 0.0, f) // Returns zero value on failure
 }
 
-type Entity interface {
-	Do(string) error
+func TestUnsafeAssertion(t *testing.T) {
+	var i interface{} = 42
+
+	// unsafe: PANICS if wrong type
+	val := i.(int)
+	assert.Equal(t, 42, val)
+
+	// If we did: i.(string) -> panic!
+	defer func() {
+		if r := recover(); r == nil {
+			t.Errorf("The code did not panic")
+		}
+	}()
+	_ = i.(string) // This will panic
 }
 
-func New() Entity {
-	return &entity{}
+func TestTypeSwitch(t *testing.T) {
+	whatIsIt := func(i interface{}) string {
+		switch i.(type) {
+		case string:
+			return "it is a string"
+		case int:
+			return "it is an int"
+		case bool:
+			return "it is a bool"
+		default:
+			return "unknown"
+		}
+	}
+
+	assert.Equal(t, "it is a string", whatIsIt("hi"))
+	assert.Equal(t, "it is an int", whatIsIt(10))
+	assert.Equal(t, "it is a bool", whatIsIt(true))
+	assert.Equal(t, "unknown", whatIsIt(3.14))
 }
 
-type entity struct {
+type Animal interface {
+	Speak() string
 }
 
-func (e *entity) Do(s string) error {
-	fmt.Printf("Run `Do` with, %v\n", s)
-	return nil
+type Dog struct {
+	Breed string
 }
 
-func (e *entity) DoSomethingElse(s string) error {
-	fmt.Printf("Run `DoSomethingElse` with, %v\n", s)
-	return nil
-}
+func (d Dog) Speak() string { return "Woof!" }
 
-// nolint
-type entity2 struct {
-}
+func TestInterfaceAssertion(t *testing.T) {
+	// A more practical example: asserting an interface to a concrete struct
+	var a Animal = Dog{Breed: "Labrador"}
 
-// nolint
-func (e *entity2) Do(s string) error {
-	panic("implement me")
-}
+	// We can speak through the interface
+	assert.Equal(t, "Woof!", a.Speak())
 
-// nolint
-func (e *entity2) DoAThirdThing(s string) error {
-	fmt.Printf("Run `DoAThirdThing` with, %v\n", s)
-	return nil
+	// But if we want to access Breed, we need an assertion
+	d, ok := a.(Dog)
+	assert.True(t, ok)
+	assert.Equal(t, "Labrador", d.Breed)
 }

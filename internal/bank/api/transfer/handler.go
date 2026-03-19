@@ -35,7 +35,7 @@ func (h *Handler) CreateTransfer(c *gin.Context) {
 
 	// TODO 5: Log success and return 200.
 
-	// REMOVE THIS LINE when you implement TODO 1:
+	// REMOVE BELOW LINES when you implement TODO 1:
 	_, _ = errors.New(""), middleware.ClaimsFromCtx(ctx) // silence unused imports
 	_ = domain.ErrAccountNotFound                        // silence unused import
 	_ = apierror.ErrInternalServerError                  // silence unused import

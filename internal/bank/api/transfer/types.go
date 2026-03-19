@@ -4,7 +4,7 @@ package transfer
 type CreateTransferRequest struct {
 	FromAccountID string `json:"from_account_id" binding:"required"`
 	ToAccountID   string `json:"to_account_id"   binding:"required"`
-	Amount        int64  `json:"amount"           binding:"required,gte=1"`
+	Amount        int64  `json:"amount"          binding:"required,gte=1"`
 }
 
 // TransferResponse is the JSON body returned on successful transfer.

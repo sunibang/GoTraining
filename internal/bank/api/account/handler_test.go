@@ -107,7 +107,7 @@ func TestGetAccount(t *testing.T) {
 				},
 			},
 			id:       "ACC-001",
-			scope:    "transfers:write", // missing accounts:read
+			scope:    "accounts:write", // missing accounts:read
 			wantCode: http.StatusForbidden,
 		},
 	}

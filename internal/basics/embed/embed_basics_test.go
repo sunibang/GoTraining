@@ -31,7 +31,7 @@ func TestStructEmbedding_Promotion(t *testing.T) {
 	assert.Equal(t, "Alice", a.Name)
 
 	// 2. Can still access through the inner name (the type name)
-	assert.Equal(t, "Alice", a.User.Name)
+	assert.Equal(t, "Alice", a.User.Name) //nolint:staticcheck // intentionally showing explicit embedded field access
 
 	// 3. Promoted Methods: Can call Greet() directly on Admin
 	assert.Equal(t, "Hi, I'm Alice", a.Greet())
